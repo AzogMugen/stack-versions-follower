@@ -17,21 +17,9 @@ expected_create_body = "Expected minimal body : \n{\"env\": \"dev\", \"name\":\"
 
 VERSION_REGEX_PATTERN = "^[0-9]+\.[0-9]+\.[0-9]+[+0-9A-Za-z-]*$"
 
-@app.route("/")
 
-
-
-
-
-@app.route("/list")
-def list ():
-    if not request.data:
-        return Response(expected_list_body, status=400, mimetype='application/json')
-    readable_json = json.loads(request.data)
-    if not "env" in readable_json:
-        return Response(expected_list_body, status=400, mimetype='application/json')
-
-    env = readable_json['env']
+@app.route("/list/<env>")
+def list (env):
     stack = db[env]
     response = dumps(stack.find())
     return Response(response, status=200, mimetype='application/json')
