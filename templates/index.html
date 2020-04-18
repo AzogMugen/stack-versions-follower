@@ -1,0 +1,51 @@
+<html>
+	<title>SVT - UI</title>
+	<head>
+		<link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='css/main.css') }}">
+		<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+		<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				dataset = {{ data|safe }};
+				dataset.forEach(function(el) { // I know it's dirty but can't find easiest way to do it
+					if (el.url === undefined) {el.url = "";} // Maybe force url as a mandatory param
+					$("#applications-table").find('tbody').append("<tr>");
+					$("#applications-table").find('tbody').append("<td>"+el.name+"</td>");
+					$("#applications-table").find('tbody').append("<td>"+el.version+"</td>");
+					$("#applications-table").find('tbody').append('<td><a href="'+el.url+'">'+el.url+'</td>');
+					$("#applications-table").find('tbody').append("<td>"+formatDateToFR(new Date(el.date.$date))+"</td>");
+					$("#applications-table").find('tbody').append("</tr>");
+				})
+				$('#applications-table').DataTable(); // Tried datatables without success
+			});
+			function formatDateToFR(date) { // https://stackoverflow.com/a/30272803
+				var d = new Date(date);
+				var datestring = ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+				return datestring;
+			}
+		</script>
+	</head>
+	<body>
+		<div class="flex-container">
+			<div class="flex-item">
+				<h1>Stack Versions Tracker</h1>
+			</div>
+		</div>
+		<div class="flex-container">
+			<div class="flex-item">
+				<table id="applications-table" class="display">
+					<thead> 
+						<tr>
+							<th>Application name</th>
+							<th>Version</th>
+							<th>URL</th>
+							<th>Date of deploy</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody> 
+				</table>
+			</div>
+		</div>
+	</body>
+</html>

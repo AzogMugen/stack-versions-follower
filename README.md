@@ -7,12 +7,16 @@ Meant to be called with a simple call to `/create` by Jenkins, Gitlab-ci or else
 So at every moment the SVT will keep track of the versions of the apps deployed in an environment   
   
 Actually only 2 routes :  
+
+- `/create` method POST [string:env, string:name, string:version] :  
+Creates (if not exist, based on name) or updates (if exist, based on name) an application with its name, version, and environment of deployment  
   
 - `/list` method GET [string:env] : 
 Returns list of all applications of an env from DB  
 
-- `/create` method POST [string:env, string:name, string:version] :  
-Creates (if not exist, based on name) or updates (if exist, based on name) an application with its name, version, and environment of deployment  
+- `/` method GET [] : 
+Shows a template page html with all the entries of one stack  
+
   
 Checks if required params are presents, and also if param version matches a regex.  
   
@@ -23,25 +27,28 @@ Since it\'s mongoDB, no schema and one can add whatever param he likes such as u
 
 ## Config
 
-URL : `http://127.0.0.1:5000`
+URL : `http://127.0.0.1:5000`  
 MongoDB : `mongodb://127.0.0.1:27017`
 
 ## Todos
 
 - Check if collection (env) exists in the DB and create a new one if not
 - Manage configuration outside of code, not hard coded
-- Manage history by adding each time another version, instead of updating one
-- Create a page with datatables to see actual applications deployed in the selected env with templates
-- Create a page to view history of deployment of a certain application
+- Add datatables to filter results, fuzzy search mandatory
+- Add dropdown to select environment in the template
 - Add requirements.txt
 - Dockerize the application (nginx ?)
 - Manage https (nginx ?)
 - Add tests
 - Add authentication ?
+- Manage history by adding each time another version, instead of updating one ?
+- If yes, create a page to view history of deployment of a certain application ?
 
 ## Tests
 
-On my machine I tried to insert 260 000 different entries like the following :
+`test_regex.py` allows to kind of "unit test" the regex for the versions. Probably some tests are missing.
+
+In the hypothesis of keeping an history, I tried to insert 260 000 different random entries like the following :
 
 ```python
 {
@@ -63,9 +70,17 @@ And after it\'s a factor of a 1000 to represent the number of applications, depl
  - 1000 applications deployed 1 times a day over 1 year  
  - you choose
 
-So I think it\'s worth looking for keeping an history of the apps  
+
 
 ## Changelog
+
+
+0.10.0
+======
+
+ - Added page to view the result for only one default stack
+ - Forced the date on creation and update of an entry
+
 
 0.9.0 
 =====
