@@ -7,13 +7,13 @@
 		<script type="text/javascript">
 			$(document).ready(function() {
 				dataset = {{ data|safe }};
-				dataset.forEach(function(element) { // I know it's dirty but can't find easiest way to do it
-					if (element.url === undefined) {element.url = "";} // Maybe force url as a mandatory param
+				dataset.forEach(function(el) { // I know it's dirty but can't find easiest way to do it
+					if (el.url === undefined) {el.url = "";} // Maybe force url as a mandatory param
 					$("#applications-table").find('tbody').append("<tr>");
-					$("#applications-table").find('tbody').append("<td>"+element.name+"</td>");
-					$("#applications-table").find('tbody').append("<td>"+element.version+"</td>");
-					$("#applications-table").find('tbody').append("<td>"+element.url+"</td>");
-					$("#applications-table").find('tbody').append("<td>"+formatDateToFR(new Date(element.date.$date))+"</td>");
+					$("#applications-table").find('tbody').append("<td>"+el.name+"</td>");
+					$("#applications-table").find('tbody').append("<td>"+el.version+"</td>");
+					$("#applications-table").find('tbody').append('<td><a href="'+el.url+'">'+el.url+'</td>');
+					$("#applications-table").find('tbody').append("<td>"+formatDateToFR(new Date(el.date.$date))+"</td>");
 					$("#applications-table").find('tbody').append("</tr>");
 				})
 				$('#applications-table').DataTable(); // Tried datatables without success

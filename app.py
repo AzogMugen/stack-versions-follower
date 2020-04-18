@@ -60,10 +60,12 @@ def createVersion ():
             return Response("More than one application with the name : " + name, status=409, mimetype='application/json')
             
         elif counted_results < 1 : # no entry, so we create
+            readable_json['date'] = datetime.now()
             stack.insert_one(readable_json) # all the mandatory values seem to be ok so we can insert
             return Response("Creation successful", status=200, mimetype='application/json')
 
         else: # exactly one entry, so we update
+            readable_json['date'] = datetime.now()
             stack.update_one({"name": name}, { "$set" : readable_json})
             return Response("Update successful", status=200, mimetype='application/json')
     
