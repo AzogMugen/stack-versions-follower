@@ -52,8 +52,10 @@ def createVersion ():
         return Response("Version must match following regex : "+VERSION_REGEX_PATTERN, status=400, mimetype='application/json')
         
     else: # version matches regex
+        available_collections = db.list_collection_names()
+        if env not in available_collections:
+            # Log or # return Response("Couldn't find '"+env+"' in "+str(available_collections), status=400, mimetype='application/json')
         stack = db[env] # Selecting the good collection from request
-        # Check with that if collection exists : db.list_collection_names()
         counted_results = stack.count_documents({"name": {"$regex" : "^" + name + "$"}})
 
         if counted_results > 1 :

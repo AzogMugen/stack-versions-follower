@@ -6,7 +6,7 @@ A small and simple flask and mongo app to keep track of versions of an environme
 Meant to be called with a simple call to `/create` by Jenkins, Gitlab-ci or else, whenever an app is deployed into an environment.  
 So at every moment the SVT will keep track of the versions of the apps deployed in an environment   
   
-Actually only 2 routes :  
+Actually 3 routes :  
 
 - `/create` method POST [string:env, string:name, string:version] :  
 Creates (if not exist, based on name) or updates (if exist, based on name) an application with its name, version, and environment of deployment  
@@ -32,7 +32,6 @@ MongoDB : `mongodb://127.0.0.1:27017`
 
 ## Todos
 
-- Check if collection (env) exists in the DB and create a new one if not
 - Manage configuration outside of code, not hard coded
 - Add datatables to filter results, fuzzy search mandatory
 - Add dropdown to select environment in the template
