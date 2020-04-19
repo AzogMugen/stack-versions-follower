@@ -7,16 +7,23 @@
 		<script type="text/javascript">
 			$(document).ready(function() {
 				dataset = {{ data|safe }};
-				dataset.forEach(function(el) { // I know it's dirty but can't find easiest way to do it
+				// Dirty way to build the table but can't find easiest way to do it
+				dataset.forEach(function(el) { 
 					if (el.url === undefined) {el.url = "";} // Maybe force url as a mandatory param
 					$("#applications-table").find('tbody').append("<tr>");
 					$("#applications-table").find('tbody').append("<td>"+el.name+"</td>");
 					$("#applications-table").find('tbody').append("<td>"+el.version+"</td>");
-					$("#applications-table").find('tbody').append('<td><a href="'+el.url+'">'+el.url+'</td>');
+					$("#applications-table").find('tbody').append('<td><a target="_blank" href="'+el.url+'">'+el.url+'</td>');
 					$("#applications-table").find('tbody').append("<td>"+formatDateToFR(new Date(el.date.$date))+"</td>");
 					$("#applications-table").find('tbody').append("</tr>");
 				})
-				$('#applications-table').DataTable(); // Tried datatables without success
+				envs = {{ envs|safe }}; // Same dirty way to build dropdown
+				selected_env = '{{ selected_env }}';
+				envs.reverse().forEach(function(el) {
+					if(el == selected_env) {sel = 'selected="selected"'} else { sel = '';}
+					$("#environments-select").append('<option value="'+el+'" '+sel+'>'+el+'</option>')
+				});
+				// $('#applications-table').DataTable(); // Tried datatables without success
 			});
 			function formatDateToFR(date) { // https://stackoverflow.com/a/30272803
 				var d = new Date(date);
@@ -29,6 +36,15 @@
 		<div class="flex-container">
 			<div class="flex-item">
 				<h1>Stack Versions Tracker</h1>
+			</div>
+		</div>
+		<div class="flex-container">
+			<div class="flex-item">
+				<form id="environments-form" name="environments-form" action="/" method='POST'>
+				    <select id="environments-select" name="environment" onchange="this.form.submit()">
+				    </select>
+				    <!-- <button type="submit">Change environment</button> -->
+				</form>
 			</div>
 		</div>
 		<div class="flex-container">

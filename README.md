@@ -6,43 +6,43 @@ A small and simple flask and mongo app to keep track of versions of an environme
 Meant to be called with a simple call to `/create` by Jenkins, Gitlab-ci or else, whenever an app is deployed into an environment.  
 So at every moment the SVT will keep track of the versions of the apps deployed in an environment   
   
-Actually only 2 routes :  
+Actually 3 routes :  
 
 - `/create` method POST [string:env, string:name, string:version] :  
 Creates (if not exist, based on name) or updates (if exist, based on name) an application with its name, version, and environment of deployment  
+Checks if required params are presents, and also if param version matches a regex.  
+Since it\'s mongoDB, no schema and one can add whatever param he likes such as url. Just they won\'t show up
   
 - `/list` method GET [string:env] : 
 Returns list of all applications of an env from DB  
 
-- `/` method GET [] : 
+- `/` method GET [ ] : 
 Shows a template page html with all the entries of one stack  
 
   
-Checks if required params are presents, and also if param version matches a regex.  
-  
 Actually doesn\'t work in standalone, needs to have local mongo server.  
 
-Since it\'s mongoDB, no schema and one can add whatever param he likes such as url.
-
-
+  
 ## Config
 
 URL : `http://127.0.0.1:5000`  
 MongoDB : `mongodb://127.0.0.1:27017`
+Default database : `stacks`
 
 ## Todos
 
-- Check if collection (env) exists in the DB and create a new one if not
-- Manage configuration outside of code, not hard coded
-- Add datatables to filter results, fuzzy search mandatory
-- Add dropdown to select environment in the template
 - Add requirements.txt
+- Add datatables to filter results, fuzzy search mandatory
+- Clean the mess a little with the templates
+- Add bootstrap because it's naked
 - Dockerize the application (nginx ?)
+- Manage configuration outside of code, not hard coded
 - Manage https (nginx ?)
 - Add tests
-- Add authentication ?
+- Add authentication ? UI, API, DB ?
 - Manage history by adding each time another version, instead of updating one ?
 - If yes, create a page to view history of deployment of a certain application ?
+ => Remind that it will lose params like url if not sent, and mongo queries with dates will be needed
 
 ## Tests
 
@@ -66,7 +66,7 @@ I choosed 260 000 because it represents :
 
 And after it\'s a factor of a 1000 to represent the number of applications, deployments per day and years :  
  - 10 applications deployed 10 times a day over 10 years  
- - 100 applications deployed 1 times a day over 10 years  
+ - 100 applications deployed 10 times a day over 1 year  
  - 1000 applications deployed 1 times a day over 1 year  
  - you choose
 
@@ -74,6 +74,11 @@ And after it\'s a factor of a 1000 to represent the number of applications, depl
 
 ## Changelog
 
+0.10.1
+======
+
+ - Added dropdown to select the environment
+ - Added screenshots of poor UI
 
 0.10.0
 ======

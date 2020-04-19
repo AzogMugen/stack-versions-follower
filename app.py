@@ -7,25 +7,29 @@ from datetime import datetime
 app = Flask(__name__)
 
 client = MongoClient("mongodb://127.0.0.1:27017") #host uri
-db = client.stacks    # Select the database
+db = client.stacks    # Make it configurable
 
 required_params = ["env", "name", "version"]
 expected_create_body = "Expected minimal body : \n{\"env\": \"dev\", \"name\":\"app_name\", \"version\" : \"0.0.1\"}"
 
 VERSION_REGEX_PATTERN = "^[0-9]+\.[0-9]+\.[0-9]+[+0-9A-Za-z-]*$"
 
-
-@app.route("/", methods=['GET'])
-def index():
-    stack = db['dev']
-    response = dumps(stack.find({}, {"_id":0}))
-    pprint.pprint(response)
-    return render_template('index.html', data=response)
-
-@app.route("/list/<env>",  methods=['GET'])
-def list (env):
+def findAllEntriesForEnv(env):
     stack = db[env]
-    response = dumps(stack.find())
+    return dumps(stack.find())
+
+@app.route("/", methods=['GET', 'POST'])
+def index():
+    if request.form:
+        env = request.form['environment']
+    else: 
+        env = 'dev'
+    response = findAllEntriesForEnv(env)
+    return render_template('index.html', data=response, envs=db.list_collection_names(), selected_env=env)
+
+@app.route("/list/<env>")
+def list (env):
+    response = findAllEntriesForEnv(env)
     return Response(response, status=200, mimetype='application/json')
 
 
@@ -52,8 +56,11 @@ def createVersion ():
         return Response("Version must match following regex : "+VERSION_REGEX_PATTERN, status=400, mimetype='application/json')
         
     else: # version matches regex
-        stack = db[env] # Selecting the good collection from request
-        # Check with that if collection exists : db.list_collection_names()
+        available_collections = db.list_collection_names()
+        if env not in available_collections:
+            print("Couldn't find '"+env+"' in "+str(available_collections))
+        
+        stack = db[env] # Selecting the collection from request
         counted_results = stack.count_documents({"name": {"$regex" : "^" + name + "$"}})
 
         if counted_results > 1 :
