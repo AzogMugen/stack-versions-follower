@@ -31,8 +31,7 @@ Default database : `stacks`
 
 ## Todos
 
-- Add requirements.txt
-- Add datatables to filter results, fuzzy search mandatory
+- Add datatables to filter results by application name, fuzzy search mandatory
 - Clean the mess a little with the templates
 - Add bootstrap because it's naked
 - Dockerize the application (nginx ?)
@@ -73,6 +72,12 @@ And after it\'s a factor of a 1000 to represent the number of applications, depl
 
 
 ## Changelog
+
+0.10.1
+======
+
+ - Added requirements.txt via https://github.com/bndr/pipreqs
+ - Prepared env vars for mongo
 
 0.10.1
 ======
