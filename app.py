@@ -6,17 +6,16 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-client = MongoClient("mongodb://127.0.0.1:27017") #host uri
-db = client.stacks    # Make it configurable
+# Definitions to set in Dockerfile
+# MONGO_URI = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017'
+
+client = MongoClient("mongodb://127.0.0.1:27017")
+db = client.stacks
 
 required_params = ["env", "name", "version"]
 expected_create_body = "Expected minimal body : \n{\"env\": \"dev\", \"name\":\"app_name\", \"version\" : \"0.0.1\"}"
 
 VERSION_REGEX_PATTERN = "^[0-9]+\.[0-9]+\.[0-9]+[+0-9A-Za-z-]*$"
-
-def findAllEntriesForEnv(env):
-    stack = db[env]
-    return dumps(stack.find())
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -77,6 +76,11 @@ def createVersion ():
             return Response("Update successful", status=200, mimetype='application/json')
     
     return Response("Unexpected error", status=418, mimetype='application/json')
+
+
+def findAllEntriesForEnv(env):
+    stack = db[env]
+    return dumps(stack.find())
 
 if __name__ == "__main__":
     app.run()
