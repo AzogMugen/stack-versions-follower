@@ -30,7 +30,7 @@ def index():
     )
 
 @app.route("/list/<env>")
-def list (env):
+def list (env): # Check characters for security here ?
     response = findAllEntriesForEnv(env)
     return Response(response, status=200, mimetype='application/json')
 
@@ -46,11 +46,9 @@ def createVersion ():
     if len(json_payload) > 10: # TODO : Check what value to put here
         return Response("Too many elements in payload", status=400, mimetype='application/json')
     for key in json_payload:
-        if key.find("$") != -1 or json_payload[key].find("$") != -1: # Mongo-related security
-            print(json_payload[key])
+        if key.find("$") != -1 or key.find(".") != -1: # Mongo-related security, see README.md
             return Response('"$" character not allowed in "'+key+'":"'+json_payload[key]+'"', status=400, mimetype='application/json')
         if json_payload[key].find("<") != -1 or json_payload[key].find(">") != -1 : # To avoid arbitrary html sent to app when showing in template
-            print(json_payload[key])
             return Response('"<" and ">" characters not allowed in "'+key+'":"'+json_payload[key]+'"', status=400, mimetype='application/json')
 
     # Validating presence of params
@@ -65,7 +63,7 @@ def createVersion ():
     name = json_payload['name']
     version = json_payload['version']
 
-    # Validating format of version
+    # Validating format of version according to https://semver.org
     if not re.search(VERSION_REGEX_PATTERN, version):
         print("Version does not match regex")
         return Response("Version must match following regex : "+VERSION_REGEX_PATTERN, status=400, mimetype='application/json')

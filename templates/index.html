@@ -5,33 +5,33 @@
 		<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 		<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 		{% if data %}
-		<script type="text/javascript">
-			$(document).ready(function() {
-				dataset = {{ data|safe }};
-				// Dirty way to build the table but can't find easiest way to do it
-				dataset.forEach(function(el) { 
-					if (el.url === undefined) {el.url = "";} // Maybe force url as a mandatory param
-					$("#applications-table").find('tbody').append("<tr>");
-					$("#applications-table").find('tbody').append("<td>"+el.name+"</td>");
-					$("#applications-table").find('tbody').append("<td>"+el.version+"</td>");
-					$("#applications-table").find('tbody').append('<td><a target="_blank" href="'+el.url+'">'+el.url+'</td>');
-					$("#applications-table").find('tbody').append("<td>"+formatDateToFR(new Date(el.date.$date))+"</td>");
-					$("#applications-table").find('tbody').append("</tr>");
-				})
-				envs = {{ envs|safe }}; // Same dirty way to build dropdown
-				selected_env = '{{ selected_env }}';
-				envs.reverse().forEach(function(el) {
-					if(el == selected_env) {sel = 'selected="selected"'} else { sel = '';}
-					$("#environments-select").append('<option value="'+el+'" '+sel+'>'+el+'</option>')
+			<script type="text/javascript">
+				$(document).ready(function() {
+					dataset = {{ data|safe }};
+					// Dirty way to build the table but can't find easiest way to do it
+					dataset.forEach(function(el) { 
+						if (el.url === undefined) {el.url = "";} // Maybe force url as a mandatory param
+						$("#applications-table").find('tbody').append("<tr>");
+						$("#applications-table").find('tbody').append("<td>"+el.name+"</td>");
+						$("#applications-table").find('tbody').append("<td>"+el.version+"</td>");
+						$("#applications-table").find('tbody').append('<td><a target="_blank" href="'+el.url+'">'+el.url+'</td>');
+						$("#applications-table").find('tbody').append("<td>"+formatDateToFR(new Date(el.date.$date))+"</td>");
+						$("#applications-table").find('tbody').append("</tr>");
+					})
+					envs = {{ envs|safe }}; // Same dirty way to build dropdown
+					selected_env = '{{ selected_env }}';
+					envs.reverse().forEach(function(el) {
+						if(el == selected_env) {sel = 'selected="selected"'} else { sel = '';}
+						$("#environments-select").append('<option value="'+el+'" '+sel+'>'+el+'</option>')
+					});
+					// $('#applications-table').DataTable(); // Tried datatables without success
 				});
-				// $('#applications-table').DataTable(); // Tried datatables without success
-			});
-			function formatDateToFR(date) { // https://stackoverflow.com/a/30272803
-				var d = new Date(date);
-				var datestring = ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
-				return datestring;
-			}
-		</script>
+				function formatDateToFR(date) { // https://stackoverflow.com/a/30272803
+					var d = new Date(date);
+					var datestring = ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+					return datestring;
+				}
+			</script>
 		{% endif %}
 	</head>
 	<body>
@@ -52,7 +52,6 @@
 					<form id="environments-form" name="environments-form" action="/" method='POST'>
 						<select id="environments-select" name="environment" onchange="this.form.submit()">
 						</select>
-						<!-- <button type="submit">Change environment</button> -->
 					</form>
 				</div>
 			</div>
@@ -68,7 +67,7 @@
 							</tr>
 						</thead>
 						<tbody>
-						</tbody> 
+						</tbody>
 					</table>
 				</div>
 			</div>
