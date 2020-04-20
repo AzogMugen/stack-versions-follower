@@ -4,6 +4,7 @@
 		<link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='css/main.css') }}">
 		<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 		<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+		{% if data %}
 		<script type="text/javascript">
 			$(document).ready(function() {
 				dataset = {{ data|safe }};
@@ -31,6 +32,7 @@
 				return datestring;
 			}
 		</script>
+		{% endif %}
 	</head>
 	<body>
 		<div class="flex-container">
@@ -38,30 +40,38 @@
 				<h1>Stack Versions Tracker</h1>
 			</div>
 		</div>
-		<div class="flex-container">
-			<div class="flex-item">
-				<form id="environments-form" name="environments-form" action="/" method='POST'>
-				    <select id="environments-select" name="environment" onchange="this.form.submit()">
-				    </select>
-				    <!-- <button type="submit">Change environment</button> -->
-				</form>
+		{% if not data %}
+			<div class="flex-container">
+				<div class="flex-item">
+					<h3> No collection in DB, please create one on the /create route</h3>
+				</div>
 			</div>
-		</div>
-		<div class="flex-container">
-			<div class="flex-item">
-				<table id="applications-table" class="display">
-					<thead> 
-						<tr>
-							<th>Application name</th>
-							<th>Version</th>
-							<th>URL</th>
-							<th>Date of deploy</th>
-						</tr>
-					</thead>
-					<tbody>
-					</tbody> 
-				</table>
+		{% else %}
+			<div class="flex-container">
+				<div class="flex-item">
+					<form id="environments-form" name="environments-form" action="/" method='POST'>
+						<select id="environments-select" name="environment" onchange="this.form.submit()">
+						</select>
+						<!-- <button type="submit">Change environment</button> -->
+					</form>
+				</div>
 			</div>
-		</div>
+			<div class="flex-container">
+				<div class="flex-item">
+					<table id="applications-table" class="display">
+						<thead> 
+							<tr>
+								<th>Application name</th>
+								<th>Version</th>
+								<th>URL</th>
+								<th>Date of deploy</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody> 
+					</table>
+				</div>
+			</div>
+		{% endif %}
 	</body>
 </html>

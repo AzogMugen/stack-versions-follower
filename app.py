@@ -17,6 +17,8 @@ def index():
         env = request.form['environment']
     else: # default value for collection, needs to be rethinked with empty DB
         available_collections = db.list_collection_names()
+        if not available_collections:
+            return render_template('index.html')
         env = available_collections[0]
     response = findAllEntriesForEnv(env)
     # Route for template rendering
