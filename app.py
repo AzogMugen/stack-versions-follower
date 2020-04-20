@@ -3,26 +3,21 @@ import re, pprint, json
 from bson.json_util import dumps
 from pymongo import MongoClient
 from datetime import datetime
+from utils.vars import *
+from config import *
 
 app = Flask(__name__)
 
-# Definitions to set in Dockerfile
-# MONGO_URI = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017'
-
-client = MongoClient("mongodb://127.0.0.1:27017")
+client = MongoClient(MONGO_URI)
 db = client.stacks
-
-required_params = ["env", "name", "version"]
-expected_create_body = "Expected minimal body : \n{\"env\": \"dev\", \"name\":\"app_name\", \"version\" : \"0.0.1\"}"
-
-VERSION_REGEX_PATTERN = "^[0-9]+\.[0-9]+\.[0-9]+[+0-9A-Za-z-]*$"
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
     if request.form:
         env = request.form['environment']
     else: # default value for collection, needs to be rethinked with empty DB
-        env = 'dev'
+        available_collections = db.list_collection_names()
+        env = available_collections[0]
     response = findAllEntriesForEnv(env)
     # Route for template rendering
     return render_template(
@@ -52,11 +47,14 @@ def createVersion ():
         if key.find("$") != -1 or json_payload[key].find("$") != -1: # Mongo-related security
             print(json_payload[key])
             return Response('"$" character not allowed in "'+key+'":"'+json_payload[key]+'"', status=400, mimetype='application/json')
+        if json_payload[key].find("<") != -1 or json_payload[key].find(">") != -1 : # To avoid arbitrary html sent to app when showing in template
+            print(json_payload[key])
+            return Response('"<" and ">" characters not allowed in "'+key+'":"'+json_payload[key]+'"', status=400, mimetype='application/json')
 
     # Validating presence of params
     for param in required_params:
         if not param in json_payload: # checks if param exists
-            return Response("Missing param : "+param+"\n"+expected_create_body, status=400, mimetype='application/json')
+            return Response("Missing required param : "+param+"\n"+expected_create_body, status=400, mimetype='application/json')
         if not json_payload[param]: # checks if param is empty
             return Response("Param '"+param+"' can't be empty \n"+expected_create_body, status=400, mimetype='application/json')
 
@@ -68,16 +66,10 @@ def createVersion ():
     # Validating format of version
     if not re.search(VERSION_REGEX_PATTERN, version):
         print("Version does not match regex")
-        # Here return error invalid param
         return Response("Version must match following regex : "+VERSION_REGEX_PATTERN, status=400, mimetype='application/json')
     
     # Version matches regex, so we can save the payload in database
     else:
-        # Simple check of the presence of the collection, may be useless
-        available_collections = db.list_collection_names()
-        if env not in available_collections:
-            print("Couldn't find '"+env+"' in "+str(available_collections))
-        
         # Selecting the collection from request
         stack = db[env]
 
