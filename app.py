@@ -37,17 +37,30 @@ def createVersion ():
     # Params check
     if not request.data:
         return Response(expected_create_body, status=400, mimetype='application/json')
-    readable_json = json.loads(request.data)
+    json_payload = json.loads(request.data)
+
+    # Securing payload
+    if len(json_payload) > 10: # TODO : Check what value to put here
+        return Response("Too many elements in payload", status=400, mimetype='application/json')
+    for key in json_payload:
+        if key.find("$") != -1 or json_payload[key].find("$") != -1: # In order to avoid noasql or script injection
+            print(json_payload[key])
+            return Response('"$" character not allowed in "'+key+'":"'+json_payload[key]+'"', status=400, mimetype='application/json')
+
+    # Validating presence of params
     for param in required_params:
-        if not param in readable_json: # checks if param exists
+        if not param in json_payload: # checks if param exists
             return Response("Missing param : "+param+"\n"+expected_create_body, status=400, mimetype='application/json')
-        if not readable_json[param]: # checks if param is empty
+        if not json_payload[param]: # checks if param is empty
             return Response("Param '"+param+"' can't be empty \n"+expected_create_body, status=400, mimetype='application/json')
 
     # Assigning mandatory params to values
-    env = readable_json['env']
-    name = readable_json['name']
-    version = readable_json['version']
+    env = json_payload['env']
+    name = json_payload['name']
+    version = json_payload['version']
+
+    for el in json_payload:
+        print(el)
 
     if not re.search(VERSION_REGEX_PATTERN, version):
         print("Version does not match regex")
@@ -66,13 +79,13 @@ def createVersion ():
             return Response("More than one application with the name : " + name, status=409, mimetype='application/json')
             
         elif counted_results < 1 : # no entry, so we create
-            readable_json['date'] = datetime.now()
-            stack.insert_one(readable_json) # all the mandatory values seem to be ok so we can insert
+            json_payload['date'] = datetime.now()
+            stack.insert_one(json_payload) # all the mandatory values seem to be ok so we can insert
             return Response("Creation successful", status=200, mimetype='application/json')
 
         else: # exactly one entry, so we update
-            readable_json['date'] = datetime.now()
-            stack.update_one({"name": name}, { "$set" : readable_json})
+            json_payload['date'] = datetime.now()
+            stack.update_one({"name": name}, { "$set" : json_payload})
             return Response("Update successful", status=200, mimetype='application/json')
     
     return Response("Unexpected error", status=418, mimetype='application/json')
@@ -81,6 +94,8 @@ def createVersion ():
 def findAllEntriesForEnv(env):
     stack = db[env]
     return dumps(stack.find())
+
+
 
 if __name__ == "__main__":
     app.run()
