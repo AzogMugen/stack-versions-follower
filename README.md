@@ -26,19 +26,20 @@ Actually doesn\'t work in standalone, needs to have local mongo server.
 ## Config
 
 URL : `http://127.0.0.1:5000`  
-MongoDB : `mongodb://127.0.0.1:27017`
+MongoDB : `mongodb://127.0.0.1:27017`  
 Default database : `stacks`
 
 ## Todos
 
-- Add datatables to filter results by application name, fuzzy search mandatory
-- Clean the mess a little with the templates
-- Add bootstrap because it's naked
-- Dockerize the application (nginx ?)
 - Manage configuration outside of code, not hard coded
+- Dockerize the application (nginx ?)
 - Manage https (nginx ?)
-- Add tests
+- Add security, such as [flask-limiter](https://flask-limiter.readthedocs.io/en/stable/)
+- Add structure to python folders & files
+- Add datatables to filter results by application name, fuzzy search mandatory
+- Add bootstrap because it's naked
 - Add authentication ? UI, API, DB ?
+- Add tests
 - Manage history by adding each time another version, instead of updating one ?
 - If yes, create a page to view history of deployment of a certain application ?
  => Remind that it will lose params like url if not sent, and mongo queries with dates will be needed

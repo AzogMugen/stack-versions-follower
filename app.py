@@ -21,10 +21,16 @@ VERSION_REGEX_PATTERN = "^[0-9]+\.[0-9]+\.[0-9]+[+0-9A-Za-z-]*$"
 def index():
     if request.form:
         env = request.form['environment']
-    else: 
+    else: # default value for collection, needs to be rethinked with empty DB
         env = 'dev'
     response = findAllEntriesForEnv(env)
-    return render_template('index.html', data=response, envs=db.list_collection_names(), selected_env=env)
+    # Route for template rendering
+    return render_template(
+        'index.html',
+        data=response,
+        envs=db.list_collection_names(),
+        selected_env=env
+    )
 
 @app.route("/list/<env>")
 def list (env):
@@ -34,7 +40,7 @@ def list (env):
 
 @app.route("/create", methods=['POST'])
 def createVersion ():
-    # Params check
+    # Payload presence check
     if not request.data:
         return Response(expected_create_body, status=400, mimetype='application/json')
     json_payload = json.loads(request.data)
@@ -43,7 +49,7 @@ def createVersion ():
     if len(json_payload) > 10: # TODO : Check what value to put here
         return Response("Too many elements in payload", status=400, mimetype='application/json')
     for key in json_payload:
-        if key.find("$") != -1 or json_payload[key].find("$") != -1: # In order to avoid noasql or script injection
+        if key.find("$") != -1 or json_payload[key].find("$") != -1: # Mongo-related security
             print(json_payload[key])
             return Response('"$" character not allowed in "'+key+'":"'+json_payload[key]+'"', status=400, mimetype='application/json')
 
@@ -59,32 +65,35 @@ def createVersion ():
     name = json_payload['name']
     version = json_payload['version']
 
-    for el in json_payload:
-        print(el)
-
+    # Validating format of version
     if not re.search(VERSION_REGEX_PATTERN, version):
         print("Version does not match regex")
         # Here return error invalid param
         return Response("Version must match following regex : "+VERSION_REGEX_PATTERN, status=400, mimetype='application/json')
-        
-    else: # version matches regex
+    
+    # Version matches regex, so we can save the payload in database
+    else:
+        # Simple check of the presence of the collection, may be useless
         available_collections = db.list_collection_names()
         if env not in available_collections:
             print("Couldn't find '"+env+"' in "+str(available_collections))
         
-        stack = db[env] # Selecting the collection from request
+        # Selecting the collection from request
+        stack = db[env]
+
+        # Find any application with the same name in the collection
         counted_results = stack.count_documents({"name": {"$regex" : "^" + name + "$"}})
 
         if counted_results > 1 :
             return Response("More than one application with the name : " + name, status=409, mimetype='application/json')
             
         elif counted_results < 1 : # no entry, so we create
-            json_payload['date'] = datetime.now()
-            stack.insert_one(json_payload) # all the mandatory values seem to be ok so we can insert
+            json_payload['date'] = datetime.now() # add time of creation
+            stack.insert_one(json_payload)
             return Response("Creation successful", status=200, mimetype='application/json')
 
         else: # exactly one entry, so we update
-            json_payload['date'] = datetime.now()
+            json_payload['date'] = datetime.now()  # update time of deployement
             stack.update_one({"name": name}, { "$set" : json_payload})
             return Response("Update successful", status=200, mimetype='application/json')
     
@@ -94,8 +103,6 @@ def createVersion ():
 def findAllEntriesForEnv(env):
     stack = db[env]
     return dumps(stack.find())
-
-
 
 if __name__ == "__main__":
     app.run()
