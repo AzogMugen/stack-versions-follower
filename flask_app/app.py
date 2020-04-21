@@ -14,24 +14,24 @@ db = client.stacks
 @app.route("/", methods=['GET', 'POST'])
 def index():
     if request.form:
-        env = request.form['environment']
+        env_collection = request.form['environment']
     else: # default value for collection, needs to be rethinked with empty DB
         available_collections = db.list_collection_names()
         if not available_collections:
             return render_template('index.html')
-        env = available_collections[0]
-    response = findAllEntriesForEnv(env)
+        env_collection = available_collections[0]
+    response = findAllEntriesForEnv(env_collection)
     # Route for template rendering
     return render_template(
         'index.html',
         data=response,
         envs=db.list_collection_names(),
-        selected_env=env
+        selected_env=env_collection
     )
 
-@app.route("/list/<env>")
-def list (env): # Check characters for security here ?
-    response = findAllEntriesForEnv(env)
+@app.route("/list/<env_collection>")
+def list (env_collection): # Check characters for security here ?
+    response = findAllEntriesForEnv(env_collection)
     return Response(response, status=200, mimetype='application/json')
 
 
@@ -59,7 +59,7 @@ def createVersion ():
             return Response("Param '"+param+"' can't be empty \n"+expected_create_body, status=400, mimetype='application/json')
 
     # Assigning mandatory params to values
-    env = json_payload['env']
+    env_collection = json_payload['env']
     name = json_payload['name']
     version = json_payload['version']
 
@@ -71,7 +71,7 @@ def createVersion ():
     # Version matches regex, so we can save the payload in database
     else:
         # Selecting the collection from request
-        stack = db[env]
+        stack = db[env_collection]
 
         # Find any application with the same name in the collection
         counted_results = stack.count_documents({"name": {"$regex" : "^" + name + "$"}})
@@ -92,9 +92,9 @@ def createVersion ():
     return Response("Unexpected error", status=418, mimetype='application/json')
 
 
-def findAllEntriesForEnv(env):
-    stack = db[env]
+def findAllEntriesForEnv(env_collection):
+    stack = db[env_collection]
     return dumps(stack.find())
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0')

@@ -39,6 +39,14 @@ Shows a template page html with all the entries of one stack
   
 Actually doesn\'t work in standalone, needs to have local mongo server.  
 
+## Docker-compose
+
+I added a docker-compose but not with volume for the application, like I wanted (I could not make the app start).
+A simple `docker-compose up` will bring you the application and a mongodb docker.
+The volume of mongo works, so the data will be persistent on your disk.
+
+If still you want to dev the app without docker, you can run :
+`python app.py`
   
 ## Config
 
@@ -46,17 +54,18 @@ URL : `http://127.0.0.1:5000`
 MongoDB : `mongodb://127.0.0.1:27017`  
 Default database : `stacks`
 
-## Todos
+## Todos & Thoughts
 
-- Manage configuration outside of code, not hard coded
-- Dockerize the application (nginx ?)
-- Manage https (nginx ?)
+- Make docker-compose work with volume for the app
+- Find a way to auto-reload flask when a file changes
+- Manage https (nginx ? or [here](https://stackoverflow.com/q/18962418) ?)
+- Add tests for the API
 - Add security, such as [flask-limiter](https://flask-limiter.readthedocs.io/en/stable/)
-- Add structure to python folders & files
-- Add datatables to filter results by application name, fuzzy search mandatory
+- Add text field with js and autocompletion for environments selection (fuzzy search mandatory)
+- Add datatables to filter results by application name (fuzzy search mandatory)
 - Add bootstrap because it's naked
+- Add [Flask-restful](https://flask-restful.readthedocs.io/en/latest/) ?
 - Add authentication ? UI, API, DB ?
-- Add tests
 - Manage history by adding each time another version, instead of updating one ?  
  => If yes, create a page to view history of deployment of a certain application ?  
  => Remind that it will lose params like url if not sent, and mongo queries will to be changed

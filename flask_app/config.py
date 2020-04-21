@@ -1,5 +1,6 @@
-import os
+from os import environ
 
-os.environ['MONGODB_HOSTNAME'] = '127.0.0.1' # => to delete when mongo docker ready
-MONGO_URI = 'mongodb://' + os.environ['MONGODB_HOSTNAME'] + ':27017' # => to delete when mongo docker ready
-# MONGO_URI = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017'
+if environ.get('MONGODB_HOSTNAME') is None:
+	environ['MONGODB_HOSTNAME'] = '127.0.0.1' # for local dev without docker
+MONGO_URI = 'mongodb://' + environ.get('MONGODB_HOSTNAME') + ':27017' # still in place cause I couldn't use volumes with docker desktop 2.2.0.5
+# MONGO_URI = 'mongodb://' + environ.get('MONGODB_USERNAME') + ':' + environ.get('MONGODB_PASSWORD') + '@' + environ.get('MONGODB_HOSTNAME') + ':27017/?authSource=admin'
