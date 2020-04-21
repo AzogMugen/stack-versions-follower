@@ -1,0 +1,3 @@
+__pycache__
+/*.bak
+/flask_app/utils/*.bak
