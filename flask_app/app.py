@@ -12,6 +12,7 @@ client = MongoClient(MONGO_URI)
 db = client.stacks
 
 @app.route("/", methods=['GET', 'POST'])
+@app.route("/index", methods=['GET', 'POST'])
 def index():
     if request.form:
         env_collection = request.form['environment']
@@ -47,7 +48,7 @@ def createVersion ():
         return Response("Too many elements in payload", status=400, mimetype='application/json')
     for key in json_payload:
         if key.find("$") != -1 or key.find(".") != -1: # Mongo-related security, see README.md
-            return Response('"$" character not allowed in "'+key+'":"'+json_payload[key]+'"', status=400, mimetype='application/json')
+            return Response('"$" or "." character not allowed in "'+key+'":"'+json_payload[key]+'"', status=400, mimetype='application/json')
         if json_payload[key].find("<") != -1 or json_payload[key].find(">") != -1 : # To avoid arbitrary html sent to app when showing in template
             return Response('"<" and ">" characters not allowed in "'+key+'":"'+json_payload[key]+'"', status=400, mimetype='application/json')
 
@@ -66,7 +67,7 @@ def createVersion ():
     # Validating format of version according to https://semver.org
     if not re.search(VERSION_REGEX_PATTERN, version):
         print("Version does not match regex")
-        return Response("Version must match following regex : "+VERSION_REGEX_PATTERN, status=400, mimetype='application/json')
+        return Response("Version '"+version+"' must match regex : {}".format(VERSION_REGEX_PATTERN), status=400, mimetype='application/json')
     
     # Version matches regex, so we can save the payload in database
     else:

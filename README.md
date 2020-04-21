@@ -45,7 +45,7 @@ I added a docker-compose but not with volume for the application, like I wanted 
 A simple `docker-compose up` will bring you the application and a mongodb docker.
 The volume of mongo works, so the data will be persistent on your disk.
 
-If still you want to dev the app without docker, you can run :
+If still you want to dev the app without docker, **keep in mind you will need a mongo DB aside**, but you can run :  
 `python app.py`
   
 ## Config
