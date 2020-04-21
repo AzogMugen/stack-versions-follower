@@ -92,6 +92,11 @@ And after it\'s a factor of a 1000 to represent the number of applications, depl
 ## Changelog
 
 
+0.10.3
+======
+
+ - Added security checks in characters for values inserted in MongoDB
+
 0.10.2
 ======
 
