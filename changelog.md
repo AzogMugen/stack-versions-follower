@@ -1,5 +1,12 @@
 # Changelog
 
+1.0.0-RC1
+======
+
+ - Dockerized application with use of docker-compose 
+ - Changed var name 'env' to 'env_collection' in app.py to avoid confusion
+ - Moved application to 'flask_app' folder + added .gitignore
+
 
 0.10.3
 ======
