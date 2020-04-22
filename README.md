@@ -56,14 +56,13 @@ Default database : `stacks`
 
 ## Todos & Thoughts
 
-- Make docker-compose work with volume for the app
-- Find a way to auto-reload flask when a file changes
-- Manage https (nginx ? or [here](https://stackoverflow.com/q/18962418) ?)
-- Add tests for the API
+- Make a decent docker-compose that can be sent to prod, examples [here](https://hasura.io/blog/how-to-write-dockerfiles-for-python-web-apps-6d173842ae1d/), [here](http://www.patricksoftwareblog.com/using-docker-for-flask-application-development-not-just-production/), [here](https://netdevops.me/2017/flask-application-in-a-production-ready-container/) and [here](https://flask.palletsprojects.com/en/1.1.x/tutorial/deploy/)
+- Manage https as described via [nginx](https://flask.palletsprojects.com/en/1.1.x/deploying/fastcgi/#configuring-nginx) or [here](https://blog.miguelgrinberg.com/post/running-your-flask-application-over-https) 
 - Add security, such as [flask-limiter](https://flask-limiter.readthedocs.io/en/stable/)
 - Add text field with js and autocompletion for environments selection (fuzzy search mandatory)
 - Add datatables to filter results by application name (fuzzy search mandatory)
 - Add bootstrap because it's naked
+- Here an example of a [complete app well written with flask](https://www.freecodecamp.org/news/structuring-a-flask-restplus-web-service-for-production-builds-c2ec676de563/)
 - Add [Flask-restful](https://flask-restful.readthedocs.io/en/latest/) ?
 - Add authentication ? UI, API, DB ?
 - Manage history by adding each time another version, instead of updating one ?  

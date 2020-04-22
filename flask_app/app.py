@@ -1,10 +1,11 @@
 from flask import Response, Flask, render_template, request,redirect,url_for
-import re, pprint, json
 from bson.json_util import dumps
 from pymongo import MongoClient
 from datetime import datetime
 from utils.vars import *
 from config import *
+import re, pprint, json
+
 
 app = Flask(__name__)
 
@@ -98,4 +99,4 @@ def findAllEntriesForEnv(env_collection):
     return dumps(stack.find())
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run(use_reloader=True,host='0.0.0.0',port=5000)
